@@ -6,18 +6,18 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Classe wrapper per la gestione dichiarativa dei valori booleani.
+ * A wrapper class for declarative handling of boolean values.
  * <p>
- * Fornisce un'API fluente per operare sui booleani in modo pi� leggibile e funzionale,
- * evitando l'uso di costrutti if-else espliciti.
+ * Provides a fluent API for operating on booleans in a more readable
+ * and functional way, avoiding explicit if-else constructs.
  * </p>
  *
- * <h3>Esempio d'uso:</h3>
+ * <h3>Usage Example:</h3>
  * <pre>{@code
  * BooleanWrapper.of(true)
- *     .ifTrue(() -> System.out.println("� vero!"))
- *     .ifFalse(() -> System.out.println("� falso!"))
- *     .orElse(() -> System.out.println("� nullo!"));
+ *     .ifTrue(() -> System.out.println("It's true!"))
+ *     .ifFalse(() -> System.out.println("It's false!"))
+ *     .orElse(() -> System.out.println("It's null!"));
  * }</pre>
  */
 public class BooleanWrapper {
@@ -28,48 +28,48 @@ public class BooleanWrapper {
     }
 
     /**
-     * Crea un'istanza di {@code BooleanWrapper} con il valore specificato.
+     * Creates a {@code BooleanWrapper} instance with the given value.
      *
-     * @param value il valore booleano da incapsulare
-     * @return un'istanza di {@code BooleanWrapper}
+     * @param value the boolean value to wrap
+     * @return a {@code BooleanWrapper} instance
      */
     public static BooleanWrapper of(Boolean value) {
         return new BooleanWrapper(value);
     }
 
     /**
-     * Verifica se il valore booleano incapsulato � {@code true}.
+     * Checks if the wrapped boolean value is {@code true}.
      *
-     * @return {@code true} se il valore � {@code true}, {@code false} in caso contrario
+     * @return {@code true} if the value is {@code true}, {@code false} otherwise
      */
     public boolean isTrue() {
         return Boolean.TRUE.equals(value);
     }
 
     /**
-     * Verifica se il valore booleano incapsulato � {@code false}.
+     * Checks if the wrapped boolean value is {@code false}.
      *
-     * @return {@code true} se il valore � {@code false}, {@code false} in caso contrario
+     * @return {@code true} if the value is {@code false}, {@code false} otherwise
      */
     public boolean isFalse() {
         return Boolean.FALSE.equals(value);
     }
 
     /**
-     * Verifica se il valore booleano � presente (non {@code null}).
+     * Checks if the wrapped boolean value is present (not {@code null}).
      *
-     * @return {@code true} se il valore � non-null, {@code false} altrimenti
+     * @return {@code true} if the value is non-null, {@code false} otherwise
      */
     public boolean isPresent() {
         return value != null;
     }
 
     /**
-     * Esegue l'azione specificata se il valore booleano � {@code true}.
+     * Executes the given action if the wrapped value is {@code true}.
      *
-     * @param action l'azione da eseguire se il valore � {@code true}
-     * @return questa istanza di {@code BooleanWrapper} per il chaining
-     * @throws IllegalArgumentException se {@code action} � {@code null}
+     * @param action the action to execute if the value is {@code true}
+     * @return this {@code BooleanWrapper} instance for chaining
+     * @throws IllegalArgumentException if {@code action} is {@code null}
      */
     public BooleanWrapper ifTrue(Runnable action) {
         if (action == null)
@@ -80,11 +80,11 @@ public class BooleanWrapper {
     }
 
     /**
-     * Esegue l'azione specificata se il valore booleano � {@code false}.
+     * Executes the given action if the wrapped value is {@code false}.
      *
-     * @param action l'azione da eseguire se il valore � {@code false}
-     * @return questa istanza di {@code BooleanWrapper} per il chaining
-     * @throws IllegalArgumentException se {@code action} � {@code null}
+     * @param action the action to execute if the value is {@code false}
+     * @return this {@code BooleanWrapper} instance for chaining
+     * @throws IllegalArgumentException if {@code action} is {@code null}
      */
     public BooleanWrapper ifFalse(Runnable action) {
         if (action == null)
@@ -95,11 +95,11 @@ public class BooleanWrapper {
     }
 
     /**
-     * Esegue l'azione specificata se il valore booleano � presente (non {@code null}).
+     * Executes the given action if the wrapped value is present (not {@code null}).
      *
-     * @param action l'azione da eseguire con il valore booleano presente
-     * @return questa istanza di {@code BooleanWrapper} per il chaining
-     * @throws IllegalArgumentException se {@code action} � {@code null}
+     * @param action the action to execute with the present boolean value
+     * @return this {@code BooleanWrapper} instance for chaining
+     * @throws IllegalArgumentException if {@code action} is {@code null}
      */
     public BooleanWrapper ifPresent(Consumer<Boolean> action) {
         if (action == null)
@@ -110,11 +110,11 @@ public class BooleanWrapper {
     }
 
     /**
-     * Esegue l'azione specificata se il valore � {@code null}.
+     * Executes the given action if the wrapped value is {@code null}.
      *
-     * @param action l'azione da eseguire se il valore � {@code null}
-     * @return questa istanza di {@code BooleanWrapper} per il chaining
-     * @throws IllegalArgumentException se {@code action} � {@code null}
+     * @param action the action to execute if the value is {@code null}
+     * @return this {@code BooleanWrapper} instance for chaining
+     * @throws IllegalArgumentException if {@code action} is {@code null}
      */
     public BooleanWrapper orElse(Runnable action) {
         if (action == null)
@@ -125,22 +125,21 @@ public class BooleanWrapper {
     }
 
     /**
-     * Restituisce il valore booleano incapsulato o un valore di default se il valore � {@code null}.
+     * Returns the wrapped boolean value or a default value if it is {@code null}.
      *
-     * @param defaultValue il valore predefinito da restituire se il valore � {@code null}
-     * @return il valore booleano incapsulato o {@code defaultValue} se � {@code null}
+     * @param defaultValue the default value to return if the wrapped value is {@code null}
+     * @return the wrapped value or {@code defaultValue} if it is {@code null}
      */
     public boolean orElse(boolean defaultValue) {
         return Optional.ofNullable(value).orElse(defaultValue);
     }
 
     /**
-     * Restituisce il valore booleano incapsulato o un valore fornito da un {@code Supplier}
-     * se il valore � {@code null}.
+     * Returns the wrapped boolean value or a supplied value if it is {@code null}.
      *
-     * @param supplier il fornitore del valore booleano predefinito in caso di {@code null}
-     * @return il valore booleano incapsulato o il valore fornito dal {@code Supplier} se � {@code null}
-     * @throws IllegalArgumentException se {@code supplier} � {@code null}
+     * @param supplier the supplier providing the default boolean value if {@code null}
+     * @return the wrapped value or the value provided by the supplier if {@code null}
+     * @throws IllegalArgumentException if {@code supplier} is {@code null}
      */
     public boolean orElseGet(Supplier<Boolean> supplier) {
         if (supplier == null)
@@ -149,10 +148,10 @@ public class BooleanWrapper {
     }
 
     /**
-     * Esegue un'operazione di AND logico tra il valore corrente e quello di un altro {@code BooleanWrapper}.
+     * Performs a logical AND operation between the current value and another {@code BooleanWrapper}.
      *
-     * @param other l'altro {@code BooleanWrapper} da combinare con AND
-     * @return un nuovo {@code BooleanWrapper} con il risultato dell'AND logico
+     * @param other the other {@code BooleanWrapper} to combine with AND
+     * @return a new {@code BooleanWrapper} containing the result of the AND operation
      */
     public BooleanWrapper and(BooleanWrapper other) {
         if (other == null || other.value == null || this.value == null)
@@ -161,10 +160,10 @@ public class BooleanWrapper {
     }
 
     /**
-     * Esegue un'operazione di OR logico tra il valore corrente e quello di un altro {@code BooleanWrapper}.
+     * Performs a logical OR operation between the current value and another {@code BooleanWrapper}.
      *
-     * @param other l'altro {@code BooleanWrapper} da combinare con OR
-     * @return un nuovo {@code BooleanWrapper} con il risultato dell'OR logico
+     * @param other the other {@code BooleanWrapper} to combine with OR
+     * @return a new {@code BooleanWrapper} containing the result of the OR operation
      */
     public BooleanWrapper or(BooleanWrapper other) {
         if (other == null || other.value == null)
@@ -175,14 +174,11 @@ public class BooleanWrapper {
     }
 
     /**
-     * Esegue un'operazione di XOR logico tra il valore corrente e quello di un altro {@code BooleanWrapper}.
-     * <p>
-     * L'operazione XOR restituisce {@code true} se i due valori sono diversi, {@code false} se sono uguali.
-     * Se uno dei due valori � {@code null}, viene restituito un {@code BooleanWrapper} con valore {@code null}.
-     * </p>
+     * Performs a logical XOR operation between the current value and another {@code BooleanWrapper}.
      *
-     * @param other l'altro {@code BooleanWrapper} da combinare con XOR
-     * @return un nuovo {@code BooleanWrapper} con il risultato dello XOR logico
+     * @param other the other {@code BooleanWrapper} to combine with XOR
+     * @return a new {@code BooleanWrapper} containing the result of the XOR operation,
+     *         or {@code null} if either value is {@code null}
      */
     public BooleanWrapper xor(BooleanWrapper other) {
         if (other == null || other.value == null || this.value == null)
@@ -191,23 +187,24 @@ public class BooleanWrapper {
     }
 
     /**
-     * Restituisce il valore booleano invertito.
+     * Returns the negated boolean value.
      *
-     * @return un nuovo {@code BooleanWrapper} con il valore negato, oppure un {@code BooleanWrapper} con valore {@code null}
+     * @return a new {@code BooleanWrapper} with the negated value,
+     *         or a {@code BooleanWrapper} with {@code null} if the value is {@code null}
      */
     public BooleanWrapper not() {
         return value != null ? new BooleanWrapper(!value) : BooleanWrapper.of(null);
     }
 
     /**
-     * Applica una funzione di trasformazione al valore booleano e restituisce un {@code Optional}
-     * contenente il risultato.
+     * Applies a transformation function to the boolean value and returns an {@code Optional}
+     * containing the result.
      *
-     * @param <T>    il tipo del valore trasformato
-     * @param mapper la funzione di trasformazione
-     * @return un {@code Optional} contenente il risultato della trasformazione,
-     * o un {@code Optional.empty()} se il valore � {@code null}
-     * @throws IllegalArgumentException se {@code mapper} � {@code null}
+     * @param <T>    the type of the transformed value
+     * @param mapper the transformation function
+     * @return an {@code Optional} containing the result of the transformation,
+     *         or an empty {@code Optional} if the value is {@code null}
+     * @throws IllegalArgumentException if {@code mapper} is {@code null}
      */
     public <T> Optional<T> map(Function<Boolean, T> mapper) {
         if (mapper == null)
@@ -216,21 +213,18 @@ public class BooleanWrapper {
     }
 
     /**
-     * Restituisce il valore booleano incapsulato.
+     * Returns the wrapped boolean value.
      *
-     * @return il valore booleano, che potrebbe essere {@code null}
+     * @return the boolean value, which could be {@code null}
      */
     public Boolean get() {
         return value;
     }
 
     /**
-     * Restituisce il valore booleano primitivo associato a questa istanza.
-     * <p>
-     * Se il valore booleano � {@code null}, restituisce {@code false} come valore di default.
-     * </p>
+     * Returns the primitive boolean value.
      *
-     * @return il valore booleano incapsulato se presente, altrimenti {@code false}
+     * @return the wrapped boolean value if present, otherwise {@code false} as a default value
      */
     public boolean toPrimitive() {
         return value != null && value;
