@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BooleanWrapperTest {
 
     /**
-     * Test for of() method
+     * Test for of(Boolean value) method
      */
     @Test
     void of_shouldReturnWrapperTrue_whenValueIsTrue() {
@@ -40,6 +40,55 @@ class BooleanWrapperTest {
         assertFalse(wrapper.isFalse());
         assertFalse(wrapper.isPresent());
         assertNull(wrapper.get());
+    }
+
+    /**
+     * Test for fromString(String value) method
+     */
+    @Test
+    void fromString_shouldReturnTrueWrapper_whenValueIsTrueString() {
+        BooleanWrapper wrapper = BooleanWrapper.fromString("true");
+        assertNotNull(wrapper, "Expected a non-null BooleanWrapper instance");
+        assertTrue(wrapper.isTrue(), "Expected wrapped value to be true");
+    }
+
+    @Test
+    void fromString_shouldReturnFalseWrapper_whenValueIsFalseString() {
+        BooleanWrapper wrapper = BooleanWrapper.fromString("false");
+        assertNotNull(wrapper, "Expected a non-null BooleanWrapper instance");
+        assertTrue(wrapper.isFalse(), "Expected wrapped value to be false");
+    }
+
+    @Test
+    void fromString_shouldBeCaseInsensitive_whenValueIsMixedCase() {
+        BooleanWrapper wrapper1 = BooleanWrapper.fromString("TRUE");
+        BooleanWrapper wrapper2 = BooleanWrapper.fromString("False");
+
+        assertNotNull(wrapper1, "Expected a non-null BooleanWrapper instance");
+        assertTrue(wrapper1.isTrue(), "Expected wrapped value to be true");
+
+        assertNotNull(wrapper2, "Expected a non-null BooleanWrapper instance");
+        assertTrue(wrapper2.isFalse(), "Expected wrapped value to be false");
+    }
+
+    @Test
+    void fromString_shouldThrowException_whenValueIsInvalidString() {
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> BooleanWrapper.fromString("invalid"),
+                "Expected IllegalArgumentException for invalid input");
+
+        assertEquals("Invalid boolean string: invalid", exception.getMessage(),
+                "Expected specific exception message for invalid input");
+    }
+
+    @Test
+    void fromString_shouldThrowException_whenValueIsNull() {
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> BooleanWrapper.fromString(null),
+                "Expected IllegalArgumentException for null input");
+
+        assertEquals("Invalid boolean string: null", exception.getMessage(),
+                "Expected specific exception message for null input");
     }
 
     /**
@@ -229,6 +278,51 @@ class BooleanWrapperTest {
         assertThrows(IllegalArgumentException.class, 
                 () -> wrapper.ifPresent(null),
                 "Expected IllegalArgumentException when action is null");
+    }
+
+    /**
+     * Test for ifNull({@code Runnable} action )
+     */
+    @Test
+    void ifNull_shouldExecuteAction_whenValueIsNull() {
+        AtomicBoolean wasExecuted = new AtomicBoolean(false);
+        BooleanWrapper wrapper = BooleanWrapper.of(null);
+
+        wrapper.ifNull(() -> wasExecuted.set(true));
+
+        assertTrue(wasExecuted.get(), "Expected action to be executed because value is null");
+    }
+
+    @Test
+    void ifNull_shouldNotExecuteAction_whenValueIsTrue() {
+        AtomicBoolean wasExecuted = new AtomicBoolean(false);
+        BooleanWrapper wrapper = BooleanWrapper.of(true);
+
+        wrapper.ifNull(() -> wasExecuted.set(true));
+
+        assertFalse(wasExecuted.get(), "Expected action NOT to be executed because value is true");
+    }
+
+    @Test
+    void ifNull_shouldNotExecuteAction_whenValueIsFalse() {
+        AtomicBoolean wasExecuted = new AtomicBoolean(false);
+        BooleanWrapper wrapper = BooleanWrapper.of(false);
+
+        wrapper.ifNull(() -> wasExecuted.set(true));
+
+        assertFalse(wasExecuted.get(), "Expected action NOT to be executed because value is false");
+    }
+
+    @Test
+    void ifNull_shouldThrowException_whenActionIsNull() {
+        BooleanWrapper wrapper = BooleanWrapper.of(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> wrapper.ifNull(null),
+                "Expected IllegalArgumentException when action is null");
+
+        assertEquals("action cannot be null", exception.getMessage(),
+                "Expected specific exception message for null action");
     }
 
     /**
@@ -557,6 +651,36 @@ class BooleanWrapperTest {
     }
 
     /**
+     * Test for toggle() method
+     */
+    @Test
+    void toggle_shouldReturnFalseWrapper_whenValueIsTrue() {
+        BooleanWrapper wrapper = BooleanWrapper.of(true);
+        BooleanWrapper result = wrapper.toggle();
+
+        assertNotNull(result, "Expected a non-null BooleanWrapper instance");
+        assertFalse(result.get(), "Expected false because toggling true results in false");
+    }
+
+    @Test
+    void toggle_shouldReturnTrueWrapper_whenValueIsFalse() {
+        BooleanWrapper wrapper = BooleanWrapper.of(false);
+        BooleanWrapper result = wrapper.toggle();
+
+        assertNotNull(result, "Expected a non-null BooleanWrapper instance");
+        assertTrue(result.get(), "Expected true because toggling false results in true");
+    }
+
+    @Test
+    void toggle_shouldReturnSameInstance_whenValueIsNull() {
+        BooleanWrapper wrapper = BooleanWrapper.of(null);
+        BooleanWrapper result = wrapper.toggle();
+
+        assertSame(wrapper, result, "Expected the same instance to be returned because value is null");
+        assertNull(result.get(), "Expected null value to remain unchanged after toggle");
+    }
+
+    /**
      * Test for map() method
      */
     @Test
@@ -598,6 +722,67 @@ class BooleanWrapperTest {
     }
 
     /**
+     * Test for equals(BooleanWrapper other) method
+     */
+    @Test
+    void equals_shouldReturnTrue_whenBothValuesAreTrue() {
+        BooleanWrapper a = BooleanWrapper.of(true);
+        BooleanWrapper b = BooleanWrapper.of(true);
+
+        assertTrue(a.equals(b), "Expected true because both wrappers contain true");
+    }
+
+    @Test
+    void equals_shouldReturnTrue_whenBothValuesAreFalse() {
+        BooleanWrapper a = BooleanWrapper.of(false);
+        BooleanWrapper b = BooleanWrapper.of(false);
+
+        assertTrue(a.equals(b), "Expected true because both wrappers contain false");
+    }
+
+    @Test
+    void equals_shouldReturnTrue_whenBothValuesAreNull() {
+        BooleanWrapper a = BooleanWrapper.of(null);
+        BooleanWrapper b = BooleanWrapper.of(null);
+
+        assertTrue(a.equals(b), "Expected true because both wrappers contain null");
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenValuesAreDifferent() {
+        BooleanWrapper a = BooleanWrapper.of(true);
+        BooleanWrapper b = BooleanWrapper.of(false);
+
+        assertFalse(a.equals(b), "Expected false because one wrapper contains true and the other false");
+
+        BooleanWrapper c = BooleanWrapper.of(false);
+        BooleanWrapper d = BooleanWrapper.of(true);
+
+        assertFalse(c.equals(d), "Expected false because one wrapper contains false and the other true");
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenOneValueIsNull() {
+        BooleanWrapper a = BooleanWrapper.of(null);
+        BooleanWrapper b = BooleanWrapper.of(true);
+
+        assertFalse(a.equals(b), "Expected false because one wrapper is null and the other is true");
+
+        BooleanWrapper c = BooleanWrapper.of(false);
+        BooleanWrapper d = BooleanWrapper.of(null);
+
+        assertFalse(c.equals(d), "Expected false because one wrapper is false and the other is null");
+    }
+
+    @Test
+    void equals_shouldReturnFalse_whenOtherIsNull() {
+        BooleanWrapper a = BooleanWrapper.of(true);
+        BooleanWrapper b = null;
+
+        assertFalse(a.equals(b), "Expected false because comparing with null should return false");
+    }
+
+    /**
      * Test for toPrimitive() method
      */
     @Test
@@ -616,5 +801,29 @@ class BooleanWrapperTest {
     void toPrimitive_shouldReturnFalse_whenValueIsNull() {
         BooleanWrapper wrapper = BooleanWrapper.of(null);
         assertFalse(wrapper.toPrimitive(), "Expected false because the wrapped value is null, using false as default");
+    }
+
+    /**
+     * Test for toString() method
+     */
+    @Test
+    void toString_shouldReturnTrueString_whenValueIsTrue() {
+        BooleanWrapper wrapper = BooleanWrapper.of(true);
+        assertEquals("BooleanWrapper(true)", wrapper.toString(),
+                "Expected string representation to be 'BooleanWrapper(true)' when value is true");
+    }
+
+    @Test
+    void toString_shouldReturnFalseString_whenValueIsFalse() {
+        BooleanWrapper wrapper = BooleanWrapper.of(false);
+        assertEquals("BooleanWrapper(false)", wrapper.toString(),
+                "Expected string representation to be 'BooleanWrapper(false)' when value is false");
+    }
+
+    @Test
+    void toString_shouldReturnNullString_whenValueIsNull() {
+        BooleanWrapper wrapper = BooleanWrapper.of(null);
+        assertEquals("BooleanWrapper(null)", wrapper.toString(),
+                "Expected string representation to be 'BooleanWrapper(null)' when value is null");
     }
 }
