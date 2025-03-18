@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * and functional way, avoiding explicit if-else constructs.
  * </p>
  *
- * <h3>Usage Example:</h3>
+ * <h4>Usage Example:</h4>
  * <pre>{@code
  * BooleanWrapper.of(true)
  *     .ifTrue(() -> System.out.println("It's true!"))
@@ -36,6 +36,22 @@ public class BooleanWrapper {
     public static BooleanWrapper of(Boolean value) {
         return new BooleanWrapper(value);
     }
+
+    /**
+     * Creates a {@code BooleanWrapper} instance from a string representation.
+     *
+     * @param value the string value ("true", "false")
+     * @return a {@code BooleanWrapper} instance with the corresponding boolean value
+     */
+    public static BooleanWrapper fromString(String value) {
+        if ("true".equalsIgnoreCase(value)) {
+            return BooleanWrapper.of(true);
+        } else if ("false".equalsIgnoreCase(value)) {
+            return BooleanWrapper.of(false);
+        }
+        throw new IllegalArgumentException("Invalid boolean string: " + value);
+    }
+
 
     /**
      * Checks if the wrapped boolean value is {@code true}.
@@ -106,6 +122,21 @@ public class BooleanWrapper {
             throw new IllegalArgumentException("action cannot be null");
         if (value != null)
             action.accept(value);
+        return this;
+    }
+
+    /**
+     * Executes the given action if the wrapped value is {@code null}.
+     *
+     * @param action the action to execute if the value is {@code null}
+     * @return this {@code BooleanWrapper} instance for chaining
+     * @throws IllegalArgumentException if {@code action} is {@code null}
+     */
+    public BooleanWrapper ifNull(Runnable action) {
+        if (action == null)
+            throw new IllegalArgumentException("action cannot be null");
+        if (value == null)
+            action.run();
         return this;
     }
 
@@ -197,6 +228,18 @@ public class BooleanWrapper {
     }
 
     /**
+     * Toggles the boolean value if it is present.
+     *
+     * @return this {@code BooleanWrapper} instance after toggling the value,
+     *         or this instance unchanged if the value is {@code null}
+     */
+    public BooleanWrapper toggle() {
+        if (value != null)
+            return new BooleanWrapper(!value);
+        return this;
+    }
+
+    /**
      * Applies a transformation function to the boolean value and returns an {@code Optional}
      * containing the result.
      *
@@ -210,6 +253,18 @@ public class BooleanWrapper {
         if (mapper == null)
             throw new IllegalArgumentException("mapping function cannot be null");
         return Optional.ofNullable(value).map(mapper);
+    }
+
+    /**
+     * Compares this {@code BooleanWrapper} with another one.
+     *
+     * @param other the other {@code BooleanWrapper} to compare with
+     * @return {@code true} if both wrappers contain the same value, otherwise {@code false}
+     */
+    public boolean equals(BooleanWrapper other) {
+        if (other == null)
+            return false;
+        return Optional.ofNullable(value).equals(Optional.ofNullable(other.value));
     }
 
     /**
@@ -228,6 +283,11 @@ public class BooleanWrapper {
      */
     public boolean toPrimitive() {
         return value != null && value;
+    }
+
+    @Override
+    public String toString() {
+        return value == null ? "BooleanWrapper(null)" : "BooleanWrapper(" + value + ")";
     }
 
 }
